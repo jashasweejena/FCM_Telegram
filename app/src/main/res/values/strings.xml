@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">FirebaseNotificationFinal</string>
     <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
+    <string name="MESSAGE_RECEIVED" translatable="false">MESSAGE_RECEIVED</string>
 </resources>

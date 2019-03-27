@@ -7,9 +7,15 @@ import androidx.core.app.NotificationManagerCompat;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.telecom.Call;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -20,6 +26,9 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 public class MainActivity extends AppCompatActivity {
 private static String TAG = MainActivity.class.getSimpleName();
+TextView textView;
+BroadcastReceiver broadcastReceiver;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +40,8 @@ private static String TAG = MainActivity.class.getSimpleName();
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
+
+       textView  = findViewById(R.id.whatever);
 
         getToken();
 
@@ -45,6 +56,25 @@ private static String TAG = MainActivity.class.getSimpleName();
                         Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
                     }
                 });
+
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String dataPassed = intent.getStringExtra("DATA");
+                String s = intent.getAction();
+                textView.setText(dataPassed);
+                Toast.makeText(context,
+                        "Triggered by Service!\n"
+                                + "Data passed: " + dataPassed,
+                        Toast.LENGTH_LONG).show();
+            }
+        };
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(MyMessagingService.MY_ACTION);
+        registerReceiver(broadcastReceiver, intentFilter);
+
+        //Starting service explicitly is handled by FireBase, hence not needed.
     }
 
     private void getToken(){
@@ -69,3 +99,6 @@ private static String TAG = MainActivity.class.getSimpleName();
 
     }
 }
+
+
+
