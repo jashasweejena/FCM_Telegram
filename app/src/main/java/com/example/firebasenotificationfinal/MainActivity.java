@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -23,11 +25,19 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.mikepenz.fastadapter.FastAdapter;
+import com.mikepenz.fastadapter.adapters.ItemAdapter;
+import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 private static String TAG = MainActivity.class.getSimpleName();
-TextView textView;
 BroadcastReceiver broadcastReceiver;
+RecyclerView recyclerView;
+List<Forward> cardList;
+FastAdapter<Forward> fastAdapter;
 
 
     @Override
@@ -35,13 +45,25 @@ BroadcastReceiver broadcastReceiver;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        recyclerView = findViewById(R.id.recycler);
+        ItemAdapter<Forward> itemAdapter = new ItemAdapter<>();
+        cardList = new ArrayList<>();
+        itemAdapter.add(cardList);
+        fastAdapter = FastAdapter.with(itemAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        recyclerView.setAdapter(fastAdapter);
+//        final FastItemAdapter<Forward> fastAdapter = new FastItemAdapter<>();
+//        recyclerView.setAdapter(fastAdapter);
+
+       //Added for testing only.
+//        fastAdapter.add(cardList);
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             NotificationChannel channel = new NotificationChannel("channelOne", "channelOne", NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
 
-       textView  = findViewById(R.id.whatever);
 
         getToken();
 
@@ -62,7 +84,17 @@ BroadcastReceiver broadcastReceiver;
             public void onReceive(Context context, Intent intent) {
                 String dataPassed = intent.getStringExtra("DATA");
                 String s = intent.getAction();
-                textView.setText(dataPassed);
+                cardList.add(new Forward(dataPassed));
+//                itemAdapter.add(cardList);
+                fastAdapter= FastAdapter.with(itemAdapter);
+//                itemAdapter.notify();
+                fastAdapter.notifyDataSetChanged();
+                try{
+                    Log.d(TAG, "cardList: " + cardList.get(cardList.size() - 1).getMessage());
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
                 Toast.makeText(context,
                         "Triggered by Service!\n"
                                 + "Data passed: " + dataPassed,
