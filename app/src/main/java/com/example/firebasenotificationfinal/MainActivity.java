@@ -38,6 +38,7 @@ BroadcastReceiver broadcastReceiver;
 RecyclerView recyclerView;
 List<Forward> cardList;
 FastAdapter<Forward> fastAdapter;
+ItemAdapter<Forward> itemAdapter;
 
 
     @Override
@@ -46,17 +47,10 @@ FastAdapter<Forward> fastAdapter;
         setContentView(R.layout.activity_main);
 
         recyclerView = findViewById(R.id.recycler);
-        ItemAdapter<Forward> itemAdapter = new ItemAdapter<>();
-        cardList = new ArrayList<>();
-        itemAdapter.add(cardList);
+        itemAdapter = new ItemAdapter<>();
         fastAdapter = FastAdapter.with(itemAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         recyclerView.setAdapter(fastAdapter);
-//        final FastItemAdapter<Forward> fastAdapter = new FastItemAdapter<>();
-//        recyclerView.setAdapter(fastAdapter);
-
-       //Added for testing only.
-//        fastAdapter.add(cardList);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             NotificationChannel channel = new NotificationChannel("channelOne", "channelOne", NotificationManager.IMPORTANCE_DEFAULT);
@@ -84,11 +78,9 @@ FastAdapter<Forward> fastAdapter;
             public void onReceive(Context context, Intent intent) {
                 String dataPassed = intent.getStringExtra("DATA");
                 String s = intent.getAction();
-                cardList.add(new Forward(dataPassed));
-//                itemAdapter.add(cardList);
-                fastAdapter= FastAdapter.with(itemAdapter);
-//                itemAdapter.notify();
+                itemAdapter.add(new Forward(dataPassed));
                 fastAdapter.notifyDataSetChanged();
+
                 try{
                     Log.d(TAG, "cardList: " + cardList.get(cardList.size() - 1).getMessage());
                 }
