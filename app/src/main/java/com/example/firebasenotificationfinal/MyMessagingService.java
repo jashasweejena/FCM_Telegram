@@ -37,6 +37,7 @@ public class MyMessagingService extends FirebaseMessagingService {
                 intent.putExtra("DATA", data);
                 sendBroadcast(intent);
 
+                showNotification("New pinned message", data);
                 Log.d(TAG, "data received: " + data);
                 mHandler = new Handler(Looper.getMainLooper()) {
                     @Override
@@ -46,6 +47,7 @@ public class MyMessagingService extends FirebaseMessagingService {
                 };
                 Message message = mHandler.obtainMessage();
                 message.sendToTarget();
+
             }
         }
     }
@@ -67,7 +69,8 @@ public class MyMessagingService extends FirebaseMessagingService {
                 .setContentTitle(title)
                 .setContentText(message)
                 .setAutoCancel(true)
-                .setSmallIcon(android.R.drawable.star_on);
+                .setSmallIcon(android.R.drawable.star_on)
+                .setChannelId("channelOne");
         NotificationManagerCompat manager = NotificationManagerCompat.from(this);
         manager.notify(999, builder.build());
     }
